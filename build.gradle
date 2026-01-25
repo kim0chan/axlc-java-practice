@@ -23,8 +23,13 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
+// 실행 시에도 인코딩 강제
+tasks.withType(JavaExec) {
+    jvmArgs = ["-Dfile.encoding=UTF-8", "-Dsun.stdout.encoding=UTF-8", "-Dsun.stderr.encoding=UTF-8"]
+}
+
 application {
-    mainClass = 'org.example.axlc.SmartLlmChat'
+    mainClass = 'org.example.axlc.MainLauncher'
     applicationDefaultJvmArgs = [
         "-Dfile.encoding=UTF-8",
         "-Dsun.stdout.encoding=UTF-8",
