@@ -2,6 +2,8 @@ package org.example.axlc;
 
 import org.example.axlc.step0.Step0StatelessChat;
 import org.example.axlc.step1.Step1ContextChat;
+import org.example.axlc.step2.Step2Main;
+import org.example.axlc.step3.Step3PrimitiveAgent;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -13,7 +15,7 @@ public class MainLauncher {
         System.setErr(new PrintStream(System.err, true, StandardCharsets.UTF_8));
 
         if (args.length == 0) {
-            System.out.println("Usage: gradlew run --args=\"step0|step1\"");
+            System.out.println("Usage: gradlew run --args=\"step0|step1|step2|step3\"");
             return;
         }
 
@@ -25,9 +27,15 @@ public class MainLauncher {
             case "step1":
                 Step1ContextChat.main(args);
                 break;
+            case "step2":
+                Step2Main.main(args);
+                break;
+            case "step3":
+                Step3PrimitiveAgent.main(args);
+                break;
             default:
                 System.out.println("Unknown step: " + step);
-                System.out.println("Available steps: step0, step1");
+                System.out.println("Available steps: step0, step1, step2, step3");
         }
     }
 }
