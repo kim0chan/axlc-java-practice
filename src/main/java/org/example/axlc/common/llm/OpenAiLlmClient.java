@@ -49,9 +49,16 @@ public class OpenAiLlmClient implements LlmClient {
 
     @Override
     public String ask(List<ChatMessage> messages) {
+        return ask(messages, null);
+    }
+
+    /**
+     * Tool 목록을 포함하여 질문합니다.
+     */
+    public ChatMessage askWithTools(List<ChatMessage> messages, List<Object> tools) {
         try {
-            // 1. 요청 객체 생성
-            ChatRequest chatRequest = new ChatRequest(this.modelName, messages);
+            // 1. 요청 객체 생성 (tools 포함)
+            ChatRequest chatRequest = new ChatRequest(this.modelName, messages, tools);
             String requestBody = gson.toJson(chatRequest);
 
             // 2. HTTP Request 구성
@@ -66,22 +73,27 @@ public class OpenAiLlmClient implements LlmClient {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {
-                // 에러 상황 (로그 출력 또는 예외 던지기)
                 System.err.println("OpenAI API Error: " + response.statusCode() + " - " + response.body());
-                return "Error: " + response.statusCode();
+                return new ChatMessage("assistant", "Error: " + response.statusCode());
             }
 
             // 4. 응답 파싱
             ChatResponse chatResponse = gson.fromJson(response.body(), ChatResponse.class);
             if (chatResponse.choices == null || chatResponse.choices.isEmpty()) {
-                return "Error: No choices returned.";
+                return new ChatMessage("assistant", "Error: No choices returned.");
             }
 
-            return chatResponse.choices.getFirst().message.content;
+            // Choice의 message를 그대로 반환 (content와 tool_calls가 모두 들어있음)
+            return chatResponse.choices.getFirst().message;
 
         } catch (Exception e) {
             e.printStackTrace();
-            return "Exception: " + e.getMessage();
+            return new ChatMessage("assistant", "Exception: " + e.getMessage());
         }
+    }
+
+    private String ask(List<ChatMessage> messages, List<Object> tools) {
+        ChatMessage response = askWithTools(messages, tools);
+        return response.content;
     }
 }

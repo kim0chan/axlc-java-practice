@@ -5,6 +5,7 @@ import org.example.axlc.common.LoadingSpinner;
 import org.example.axlc.common.llm.ChatMessage;
 import org.example.axlc.common.llm.LlmClient;
 import org.example.axlc.common.llm.OpenAiLlmClient;
+import org.example.axlc.step4.dto.CreateMeetingRequest;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -125,11 +126,24 @@ public class Step3PrimitiveAgent {
     }
 
     private static String executeAction(String command) {
-        String commandPayload = command.replace("EXECUTE: CREATE_MEETING", "")
-                .replace("(", "")
-                .replace(")", "")
-                .trim();
-        return meetingService.createMeeting(commandPayload);
+        // EXECUTE: CREATE_MEETING(date='...', time='...', attendees='...') 에서 값 추출
+        CreateMeetingRequest req = new CreateMeetingRequest();
+        
+        req.date = extractValue(command, "date");
+        req.time = extractValue(command, "time");
+        req.attendees = extractValue(command, "attendees");
+
+        return meetingService.createMeeting(req);
+    }
+
+    private static String extractValue(String command, String key) {
+        try {
+            int start = command.indexOf(key + "='") + key.length() + 2;
+            int end = command.indexOf("'", start);
+            return command.substring(start, end);
+        } catch (Exception e) {
+            return "";
+        }
     }
 
     private static void printMeetingList() {
