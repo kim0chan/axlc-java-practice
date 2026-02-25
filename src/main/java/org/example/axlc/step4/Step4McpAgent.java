@@ -28,7 +28,7 @@ public class Step4McpAgent {
         System.out.println(ConsoleColor.CYAN + "=== [Step 4] Refactored MCP Agent ===" + ConsoleColor.RESET);
         System.out.println("로컬 명령어(npx...)를 입력하여 MCP 서버를 추가하세요.");
         System.out.println("예시 1: npx.cmd -y mcp-server-fetch-typescript");
-        System.out.println("예시 2: npx.cmd -y @modelcontextprotocol/server-filesystem");
+        System.out.println("예시 2: npx.cmd -y @modelcontextprotocol/server-filesystem [경로]");
         
         try (MultiMcpManager mcpManager = new MultiMcpManager(toolRegistry)) {
             while (true) {
