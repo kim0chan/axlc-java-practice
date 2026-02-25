@@ -41,7 +41,21 @@ public class ToolRegistry {
             Map<String, Object> function = new HashMap<>();
             function.put("name", tool.getName());
             function.put("description", tool.getDescription());
-            function.put("parameters", tool.getParametersSchema());
+            Map<String, Object> params = tool.getParametersSchema();
+            Map<String, Object> safeParams = new HashMap<>();
+            if (params != null) {
+                safeParams.putAll(params);
+            }
+
+            // OpenAI strictly requires the top-level parameters to be an 'object'.
+            // If the MCP server sent something else (like null or "None"), we fix it here.
+            if (!"object".equals(safeParams.get("type"))) {
+                safeParams.put("type", "object");
+            }
+            if (!safeParams.containsKey("properties")) {
+                safeParams.put("properties", Map.of());
+            }
+            function.put("parameters", safeParams);
             
             spec.put("function", function);
             specs.add(spec);
